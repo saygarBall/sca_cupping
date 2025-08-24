@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SCA Cupping – ฟอร์มประเมินกาแฟ (V16)</title>
+<style>
+/* Base Styles & Dark Theme */
+body{
+    margin:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background:#0D1117; /* Darker background, GitHub style */
+    color:#C9D1D9; /* Light grey text */
+}
+header{
+    background:#161B22; /* Header bar */
+    padding:16px 20px;
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+}
+h1{
+    margin:0;
+    font-size:24px;
+    color:#F0F6FC;
+}
+.wrap{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+.card{
+    background:#161B22; /* Card background */
+    border:1px solid #30363D;
+    border-radius:10px;
+    padding:20px;
+    margin-bottom:24px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+h2{
+    margin:0 0 10px 0;
+    font-size:20px;
+    color:#58A6FF; /* Accent color for section titles */
+    border-bottom: 2px solid #30363D;
+    padding-bottom: 8px;
+}
+p.hint{
+    font-size:14px;
+    color:#8B949E;
+    margin:0 0 12px 0;
+}
+label{
+    display:block;
+    margin-bottom:6px;
+    font-weight:600;
+    font-size: 15px;
+    color: #F0F6FC;
+}
+input[type=text], input[type=number], textarea, select{
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #30363D;
+    background:#0D1117; /* Input background */
+    color:#C9D1D9;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    transition: border-color 0.3s;
+}
+input:focus, textarea:focus, select:focus {
+    border-color: #58A6FF;
+    outline: none;
+    box-shadow: 0 0 0 1px #58A6FF;
+}
+
+.row{
+    display:grid;
+    grid-template-columns: 100px 1fr; /* Increased score column width */
+    gap:15px;
+    align-items:center;
+    margin-top:10px;
+    margin-bottom: 15px;
+}
+.row input[type=number] {
+    width: 100px; /* Fixed width for better layout */
+    margin-bottom: 0;
+    text-align: center;
+}
+.row input[type=range]{
+    height: 10px;
+    background: #30363D;
+    border-radius: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    padding: 0;
+}
+.row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #238636; /* Green accent */
+    cursor: pointer;
+    box-shadow: 0 0 2px rgba(0,0,0,0.6);
+}
+.row input[type=range]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    background: #238636;
+    cursor: pointer;
+}
+
+.btn{
+    padding:12px 18px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-weight:bold;
+    width:100%;
+    transition: background-color 0.3s, transform 0.1s;
+    font-size: 16px;
+    margin-top: 5px;
+}
+.btn:active {
+    transform: translateY(1px);
+}
+.btn-primary{background:#238636;color:#fff;}
+.btn-primary:hover{background:#2EA043;}
+.btn-danger{background:#DA3633;color:#fff;}
+.btn-danger:hover{background:#F85149;}
+.btn-export{background:#58A6FF;color:#fff;}
+.btn-export:hover{background:#79C0FF;}
+.hidden{display:none}
+
+/* Corrected Checkbox Layout */
+.cup-checks{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 20px; /* Increased gap for better spacing */
+    margin-top:8px;
+    padding: 8px 0;
+    border-top: 1px solid #30363D;
+    border-bottom: 1px solid #30363D;
+    justify-content: space-between; /* Distribute items evenly */
+}
+.cup-checks div{
+    display:flex;
+    align-items:center;
+    gap:6px; /* Space between checkbox and label */
+    font-size: 15px;
+}
+.cup-checks input[type=checkbox] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    background-color: #30363D;
+    border: 1px solid #8B949E;
+    border-radius: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    vertical-align: middle;
+}
+.cup-checks input[type=checkbox]:checked {
+    background-color: #238636;
+    border-color: #238636;
+}
+.cup-checks label {
+    margin-bottom: 0;
+    font-weight: normal;
+}
+/* Defect Dynamic Styling */
+#defectDynamic > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+#defectDynamic label {
+    flex-basis: 120px;
+    margin-bottom: 0;
+}
+#defectDynamic select {
+    flex-grow: 1;
+    max-width: 100px;
+    margin-bottom: 0;
+}
+
+/* Summary Page Styling */
+.summary-container{display:flex;flex-direction:column;gap:20px}
+.summary-card{
+    background:#161B22;
+    border-radius:10px;
+    padding:25px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+    border: 1px solid #30363D;
+}
+.summary-card h2,.summary-card h3{margin-top:0;color:#58A6FF;}
+.summary-header{
+    font-size:20px;
+    font-weight:bold;
+    margin-bottom:12px;
+    color:#F0F6FC;
+    border-bottom: 1px solid #30363D;
+    padding-bottom: 8px;
+}
+.summary-score{
+    font-size:52px;
+    font-weight:bold;
+    color:#238636; /* Green for score */
+    margin:12px 0 8px 0;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+.grade-tag{
+    font-size:22px;
+    font-weight:bold;
+    color:#FFC300; /* Gold/Yellow for grade */
+    padding: 4px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    background: #3A3200;
+}
+.summary-text{
+    font-size: 15px;
+    color: #8B949E;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+.summary-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    margin-top:15px;
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed; /* Binds column widths to prevent shrinking */
+}
+.summary-table th, .summary-table td{
+    padding:12px;
+    text-align:left;
+    vertical-align: top; /* Aligns content to the top */
+    word-wrap: break-word; /* Allows long words to break and wrap */
+}
+.summary-table th{background:#30363D;color:#F0F6FC; font-weight: 600;}
+.summary-table td{border-bottom:1px solid #30363D; background: #0D1117;}
+.summary-table tr:last-child td{border-bottom: none;}
+.summary-table td:last-child {color: #C9D1D9;}
+.summary-table tr:nth-child(even) td {background: #161B22;}
+.summary-table th:nth-child(1), .summary-table td:nth-child(1) {
+  width: 30%; /* Gives the first column enough space */
+}
+.summary-table th:nth-child(2), .summary-table td:nth-child(2) {
+  width: 15%; /* Keeps the score column compact */
+}
+.summary-table th:nth-child(3), .summary-table td:nth-child(3) {
+  width: 55%; /* The remaining space for the notes column */
+}
+
+/* General Info Card in Summary */
+.summary-card p {
+    margin: 6px 0;
+    font-size: 15px;
+}
+.summary-card b {
+    color: #58A6FF;
+}
+
+/* Export Buttons Layout */
+.export-buttons {
+    display:flex; 
+    flex-wrap:wrap; 
+    gap:10px; 
+    margin-top: 10px;
+}
+
+</style>
+</head>
+<body>
+<header>
+<h1>ฟอร์มประเมินกาแฟ SCA (Arabica Cupping)</h1>
+</header>
+<main class="wrap">
+<div id="formPage">
+  <div class="card">
+    <h2>ข้อมูลตัวอย่าง</h2>
+    <label>หมายเลขตัวอย่าง (Sample #)</label>
+    <input type="text" id="sampleId" placeholder="เช่น A-01">
+    <label>ระดับการคั่ว</label>
+    <select id="roast">
+      <option>Light</option>
+      <option>Medium</option>
+      <option>Dark</option>
+    </select>
+    <label>หมายเหตุ</label>
+    <textarea id="notes" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Fragrance/Aroma</h2>
+    <p class="hint">กลิ่นหอมแห้ง (Fragrance) + กลิ่นเมื่อเติมน้ำร้อน (Aroma)</p>
+    <div class="row">
+      <input type="number" id="fragranceScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="fragranceRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกสิ่งที่เจอใน Fragrance</label>
+    <textarea id="fragranceNote" placeholder="บันทึกกลิ่นเมื่อยังเป็นผงกาแฟ"></textarea>
+    <label>บันทึกสิ่งที่เจอใน Aroma</label>
+    <textarea id="aromaNote" placeholder="บันทึกกลิ่นหลังจากเติมน้ำร้อน"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Flavor</h2>
+    <p class="hint">รสชาติรวมและความซับซ้อน</p>
+    <div class="row">
+      <input type="number" id="flavorScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="flavorRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกสิ่งที่เจอใน Flavor</label>
+    <textarea id="flavorNote" placeholder="บันทึกสิ่งที่เจอใน Flavor"></textarea>
+  </div>
+  
+  <div class="card">
+    <h2>Aftertaste</h2>
+    <p class="hint">รสชาติที่ค้างอยู่หลังดื่ม</p>
+    <div class="row">
+      <input type="number" id="aftertasteScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="aftertasteRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกสิ่งที่เจอใน Aftertaste</label>
+    <textarea id="aftertasteNote" placeholder="บันทึกสิ่งที่เจอใน Aftertaste"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Acidity</h2>
+    <p class="hint">ความเป็นกรด</p>
+    <div class="row">
+      <input type="number" id="acidityScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="acidityRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>Acidity Level</label>
+    <select id="acidityLevel">
+      <option value="">--เลือกระดับความเป็นกรด--</option>
+      <option>Low</option>
+      <option>Medium</option>
+      <option>High</option>
+    </select>
+    <label>บันทึกสิ่งที่เจอใน Acidity</label>
+    <textarea id="acidityNote" placeholder="บันทึกสิ่งที่เจอใน Acidity"></textarea>
+  </div>
+  
+  <div class="card">
+    <h2>Body</h2>
+    <p class="hint">ความหนักแน่น/เนื้อสัมผัส</p>
+    <div class="row">
+      <input type="number" id="bodyScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="bodyRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกสิ่งที่เจอใน Body</label>
+    <textarea id="bodyNote" placeholder="บันทึกว่าเนื้อสัมผัสของกาแฟเป็นอย่างไร"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Balance</h2>
+    <p class="hint">ความกลมกลืนขององค์ประกอบ</p>
+    <div class="row">
+      <input type="number" id="balanceScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="balanceRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกสิ่งที่เจอใน Balance</label>
+    <textarea id="balanceNote" placeholder="บันทึกความเป็นสมดุลของกาแฟว่าเป็นอย่างไร"></textarea>
+  </div>
+
+  <div class="card">
+    <h2>Uniformity</h2>
+    <p class="hint">ความสม่ำเสมอระหว่างถ้วย : (ถ้า check จะถือว่าไม่สม่ำเสมอ)</p>
+    <div class="cup-checks">
+      <div><input type="checkbox" id="uniformity1"><label for="uniformity1">แก้ว 1</label></div>
+      <div><input type="checkbox" id="uniformity2"><label for="uniformity2">แก้ว 2</label></div>
+      <div><input type="checkbox" id="uniformity3"><label for="uniformity3">แก้ว 3</label></div>
+      <div><input type="checkbox" id="uniformity4"><label for="uniformity4">แก้ว 4</label></div>
+      <div><input type="checkbox" id="uniformity5"><label for="uniformity5">แก้ว 5</label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Clean Cup</h2>
+    <p class="hint">ความใสสะอาด ปราศจาก off-flavor : (ถ้า check จะถือว่าไม่ใสสะอาด)</p>
+    <div class="cup-checks">
+      <div><input type="checkbox" id="cleanCup1"><label for="cleanCup1">แก้ว 1</label></div>
+      <div><input type="checkbox" id="cleanCup2"><label for="cleanCup2">แก้ว 2</label></div>
+      <div><input type="checkbox" id="cleanCup3"><label for="cleanCup3">แก้ว 3</label></div>
+      <div><input type="checkbox" id="cleanCup4"><label for="cleanCup4">แก้ว 4</label></div>
+      <div><input type="checkbox" id="cleanCup5"><label for="cleanCup5">แก้ว 5</label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Sweetness</h2>
+    <p class="hint">ความหวานธรรมชาติ : (ถ้า check จะถือว่าไม่มีความหวาน)</p>
+    <div class="cup-checks">
+      <div><input type="checkbox" id="sweetness1"><label for="sweetness1">แก้ว 1</label></div>
+      <div><input type="checkbox" id="sweetness2"><label for="sweetness2">แก้ว 2</label></div>
+      <div><input type="checkbox" id="sweetness3"><label for="sweetness3">แก้ว 3</label></div>
+      <div><input type="checkbox" id="sweetness4"><label for="sweetness4">แก้ว 4</label></div>
+      <div><input type="checkbox" id="sweetness5"><label for="sweetness5">แก้ว 5</label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Overall</h2>
+    <p class="hint">ความประทับใจรวม</p>
+    <div class="row">
+      <input type="number" id="overallScore" min="6" max="10" step="0.25" value="10">
+      <input type="range" id="overallRange" min="6" max="10" step="0.25" value="10">
+    </div>
+    <label>บันทึกความประทับใจรวม</label>
+    <textarea id="overallNote" placeholder="บันทึกความรู้สึกหรือสิ่งที่โดดเด่น"></textarea>
+  </div>
+  
+  <div class="card">
+    <h2>Defects</h2>
+    <p class="hint">กรุณาระบุคะแนนหัก (Defect Deduction) เฉพาะแก้วที่มีเครื่องหมาย "Clean Cup" ถูกติ๊กไว้</p>
+    <div id="defectDynamic"></div>
+    <label>บันทึก Defect</label>
+    <textarea id="defectNotes" placeholder="รายละเอียดของ defect เช่น phenolic, grassy, fermented"></textarea>
+  </div>
+
+  <button class="btn btn-primary" id="btnFinish">➡️ ดูผลสรุปและคะแนนรวม</button>
+</div>
+
+<div id="summaryPage" class="hidden">
+  <div id="summaryCard" class="summary-container">
+
+    <div class="summary-card">
+      <div class="summary-header">ข้อมูลทั่วไป</div>
+      <p>ตัวอย่าง: <b id="sumSample"></b></p>
+      <p>Roast: <b id="sumRoast"></b></p>
+      <p>Acidity Level: <b id="sumAcidityLevel"></b></p>
+      <p>หมายเหตุ: <span id="sumNotes"></span></p>
+      <p>Defect notes: <span id="sumDefect"></span></p>
+    </div>
+
+    <div class="summary-card" style="text-align: center;">
+      <div class="summary-header">คะแนนรวมสุดท้าย (Final Score)</div>
+      <div class="summary-score" id="finalScore">0.00</div>
+      <div class="grade-tag" id="gradeTag"></div>
+      <div class="summary-text" id="summaryText"></div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-header">รายละเอียดคะแนน</div>
+      <table class="summary-table">
+        <thead><tr><th>หัวข้อ</th><th>คะแนน</th><th>บันทึก/รายละเอียด</th></tr></thead>
+        <tbody id="scoreDetails"></tbody>
+      </table>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-header">สรุป Defects</div>
+      <p id="defectSummary"></p>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <h3>Export & Share</h3>
+    <div class="export-buttons">
+        <button class="btn btn-export" id="btnExportCSV">Export CSV</button>
+        <button class="btn btn-export" id="btnExportTXT">Export TXT</button>
+        <button class="btn btn-export" id="btnExportPDF">Export PDF</button>
+        <button class="btn btn-export" id="btnExportPNG">Export PNG</button>
+        <button class="btn btn-primary" id="btnShare">แชร์ผลลัพธ์</button>
+    </div>
+  </div>
+  <button class="btn btn-danger" id="btnBack">⬅️ ย้อนกลับไปแก้ไข</button>
+</div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+const FIELDS = [
+  {key:'fragrance',label:'Fragrance',isScore:true,note:'fragranceNote'},
+  {key:'aroma',label:'Aroma',isScore:false,note:'aromaNote'},
+  {key:'flavor',label:'Flavor',isScore:true,note:'flavorNote'},
+  {key:'aftertaste',label:'Aftertaste',isScore:true,note:'aftertasteNote'},
+  {key:'acidity',label:'Acidity',isScore:true,note:'acidityNote'},
+  {key:'body',label:'Body',isScore:true,note:'bodyNote'},
+  {key:'balance',label:'Balance',isScore:true,note:'balanceNote'},
+  {key:'uniformity',label:'Uniformity',isCups:true,note:null},
+  {key:'cleanCup',label:'Clean Cup',isCups:true,note:null},
+  {key:'sweetness',label:'Sweetness',isCups:true,note:null},
+  {key:'overall',label:'Overall',isScore:true,note:'overallNote'}
+];
+
+function getFormData() {
+  const scores = {};
+  const cupChecks = {};
+  const notes = {};
+  const defectScores = {};
+  
+  ['fragrance', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'overall'].forEach(key => {
+    scores[key] = parseFloat(document.getElementById(`${key}Score`).value) || 0;
+  });
+
+  ['fragranceNote', 'aromaNote', 'flavorNote', 'aftertasteNote', 'acidityNote', 'bodyNote', 'balanceNote', 'overallNote'].forEach(key => {
+    notes[key] = document.getElementById(key).value;
+  });
+
+  ['uniformity', 'cleanCup', 'sweetness'].forEach(key => {
+    cupChecks[key] = [];
+    for(let i = 1; i <= 5; i++) {
+      cupChecks[key].push(document.getElementById(`${key}${i}`).checked ? 1 : 0);
+    }
+  });
+
+  // Dynamically get defect scores based on rendered selects
+  const defectSelects = document.getElementById('defectDynamic').querySelectorAll('select');
+  defectSelects.forEach((select) => {
+    const cupIndex = select.dataset.cupIndex;
+    defectScores[cupIndex] = parseInt(select.value);
+  });
+  
+  return {
+    sampleId: document.getElementById('sampleId').value,
+    roast: document.getElementById('roast').value,
+    generalNotes: document.getElementById('notes').value,
+    defectNotes: document.getElementById('defectNotes').value,
+    acidityLevel: document.getElementById('acidityLevel').value,
+    scores: scores,
+    cupChecks: cupChecks,
+    notes: notes,
+    defectScores: defectScores
+  };
+}
+
+function renderDefects() {
+  const data = getFormData();
+  const defectDynamicDiv = document.getElementById('defectDynamic');
+  defectDynamicDiv.innerHTML = '';
+  
+  let hasDefectCups = false;
+
+  for(let i = 1; i <= 5; i++) {
+    // Check the cleanCup checkbox status
+    if (document.getElementById(`cleanCup${i}`).checked) {
+      hasDefectCups = true;
+      const container = document.createElement('div');
+      container.innerHTML = `
+        <label>Defect แก้ว ${i}</label>
+        <select data-cup-index="${i}">
+          <option value="2">2 (Minor Defect)</option>
+          <option value="4">4 (Major Defect)</option>
+        </select>
+      `;
+      defectDynamicDiv.appendChild(container);
+      
+      // Restore previous defect score if it exists (for a smooth transition back)
+      const select = container.querySelector('select');
+      const savedScore = data.defectScores[i] || 2; // Default to 2
+      select.value = savedScore;
+    }
+  }
+  
+  if (!hasDefectCups) {
+      defectDynamicDiv.innerHTML = '<p class="hint" style="color: #238636;">ไม่มีแก้วที่ถูกระบุว่า "ไม่ใสสะอาด" (Clean Cup)</p>';
+  }
+}
+
+// Attach event listener to all Clean Cup checkboxes
+for(let i = 1; i <= 5; i++) {
+  document.getElementById(`cleanCup${i}`).addEventListener('change', renderDefects);
+}
+// Render initial state
+document.addEventListener('DOMContentLoaded', renderDefects);
+
+function updateSummary() {
+  const data = getFormData();
+  
+  let totalScore = 0;
+  let defectDeduction = 0;
+  
+  const scoreKeys = ['fragrance', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'overall'];
+  scoreKeys.forEach(key => {
+    totalScore += data.scores[key];
+  });
+  
+  const cupCheckKeys = ['uniformity', 'cleanCup', 'sweetness'];
+  cupCheckKeys.forEach(key => {
+    // Score deduction: 2 points for every unchecked cup (1 in cupChecks array means unchecked/failed)
+    totalScore += 10 - data.cupChecks[key].filter(v => v === 1).length * 2;
+  });
+  
+  // Defect deduction
+  Object.values(data.defectScores).forEach(val => {
+    defectDeduction += val;
+  });
+  
+  const finalScore = totalScore - defectDeduction;
+  const grade = finalScore >= 80 ? 'Specialty' : 'Not Specialty';
+  const defectCount = data.cupChecks.cleanCup.filter(v => v === 1).length;
+  
+  document.getElementById('sumSample').textContent = data.sampleId || '-';
+  document.getElementById('sumRoast').textContent = data.roast;
+  document.getElementById('sumNotes').textContent = data.generalNotes || '-';
+  document.getElementById('sumDefect').textContent = data.defectNotes || '-';
+  document.getElementById('sumAcidityLevel').textContent = data.acidityLevel || '-';
+  document.getElementById('finalScore').textContent = finalScore.toFixed(2);
+  document.getElementById('gradeTag').textContent = grade;
+  document.getElementById('gradeTag').style.backgroundColor = finalScore >= 80 ? '#238636' : '#DA3633';
+  document.getElementById('gradeTag').style.color = '#fff';
+  document.getElementById('finalScore').style.color = finalScore >= 80 ? '#238636' : '#DA3633';
+
+  
+  const scoreDetailsTbody = document.getElementById('scoreDetails');
+  scoreDetailsTbody.innerHTML = '';
+
+  const allFields = [
+    {key:'fragrance',label:'Fragrance/Aroma',score:data.scores.fragrance,note:`${data.notes.fragranceNote || '-'} / ${data.notes.aromaNote || '-'}`},
+    {key:'flavor',label:'Flavor',score:data.scores.flavor,note:data.notes.flavorNote || '-'},
+    {key:'aftertaste',label:'Aftertaste',score:data.scores.aftertaste,note:data.notes.aftertasteNote || '-'},
+    {key:'acidity',label:'Acidity',score:data.scores.acidity,note:data.notes.acidityNote || '-'},
+    {key:'body',label:'Body',score:data.scores.body,note:data.notes.bodyNote || '-'},
+    {key:'balance',label:'Balance',score:data.scores.balance,note:data.notes.balanceNote || '-'},
+    {key:'uniformity',label:'Uniformity',score:10 - data.cupChecks.uniformity.filter(v=>v===1).length*2,note:data.cupChecks.uniformity.filter(v=>v===1).map( (v,i) => `แก้ว ${i+1}`).join(', ') || 'ทุกแก้วผ่าน'},
+    {key:'cleanCup',label:'Clean Cup',score:10 - data.cupChecks.cleanCup.filter(v=>v===1).length*2,note:data.cupChecks.cleanCup.filter(v=>v===1).map( (v,i) => `แก้ว ${i+1}`).join(', ') || 'ทุกแก้วผ่าน'},
+    {key:'sweetness',label:'Sweetness',score:10 - data.cupChecks.sweetness.filter(v=>v===1).length*2,note:data.cupChecks.sweetness.filter(v=>v===1).map( (v,i) => `แก้ว ${i+1}`).join(', ') || 'ทุกแก้วผ่าน'},
+    {key:'overall',label:'Overall',score:data.scores.overall,note:data.notes.overallNote || '-'}
+  ];
+  
+  allFields.forEach(f => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${f.label}</td><td>${f.score.toFixed(2)}</td><td>${f.note}</td>`;
+    scoreDetailsTbody.appendChild(row);
+  });
+  
+  document.getElementById('defectSummary').textContent = `จำนวนแก้วที่ถูกระบุว่าไม่ใสสะอาด: ${defectCount} แก้ว. คะแนนหักรวม Defect: ${defectDeduction} คะแนน. (รายละเอียด Defect: ${data.defectNotes || '-'})`;
+  
+  let summaryMsg = `กาแฟตัวอย่าง ${data.sampleId || ''} ระดับการคั่ว ${data.roast} ได้คะแนนรวม ${finalScore.toFixed(2)} จัดอยู่ในระดับ ${grade}. `;
+  if(data.acidityLevel) summaryMsg += `Acidity: ${data.acidityLevel}. `;
+  if(data.generalNotes) summaryMsg += `หมายเหตุ: ${data.generalNotes}. `;
+  if(data.notes.overallNote) summaryMsg += `ความประทับใจรวม: ${data.notes.overallNote}`;
+  document.getElementById('summaryText').textContent = summaryMsg;
+}
+
+document.getElementById('btnFinish').addEventListener('click', () => {
+  updateSummary();
+  document.getElementById('formPage').classList.add('hidden');
+  document.getElementById('summaryPage').classList.remove('hidden');
+});
+
+document.getElementById('btnBack').addEventListener('click', () => {
+  document.getElementById('summaryPage').classList.add('hidden');
+  document.getElementById('formPage').classList.remove('hidden');
+});
+
+function syncInputs(numId, rangeId) {
+  const numInput = document.getElementById(numId);
+  const rangeInput = document.getElementById(rangeId);
+  numInput.addEventListener('input', () => rangeInput.value = numInput.value);
+  rangeInput.addEventListener('input', () => numInput.value = rangeInput.value);
+}
+syncInputs('fragranceScore', 'fragranceRange');
+syncInputs('flavorScore', 'flavorRange');
+syncInputs('aftertasteScore', 'aftertasteRange');
+syncInputs('acidityScore', 'acidityRange');
+syncInputs('bodyScore', 'bodyRange');
+syncInputs('balanceScore', 'balanceRange');
+syncInputs('overallScore', 'overallRange');
+
+function getFullSummaryText() {
+  const data = getFormData();
+  const { finalScore, grade } = getSummaryData();
+  const defectDeduction = Object.values(data.defectScores).reduce((a,b)=>a+b,0);
+  
+  let text = `[SCA Cupping Score Summary]\n\n`;
+  text += `Sample: ${data.sampleId || '-'}\nRoast: ${data.roast}\nAcidity Level: ${data.acidityLevel || '-'}\nNotes: ${data.generalNotes || '-'}\nDefect Notes: ${data.defectNotes || '-'}\n`;
+  text += `\nFinal Score: ${finalScore.toFixed(2)} (${grade})\n`;
+  text += `\n-- Score Details --\n`;
+  
+  text += `Fragrance/Aroma: ${data.scores.fragrance.toFixed(2)} (Note: ${data.notes.fragranceNote || '-'} / ${data.notes.aromaNote || '-'} \n`;
+  text += `Flavor: ${data.scores.flavor.toFixed(2)} (Note: ${data.notes.flavorNote || '-'} \n`;
+  text += `Aftertaste: ${data.scores.aftertaste.toFixed(2)} (Note: ${data.notes.aftertasteNote || '-'} \n`;
+  text += `Acidity: ${data.scores.acidity.toFixed(2)} (Note: ${data.notes.acidityNote || '-'} \n`;
+  text += `Body: ${data.scores.body.toFixed(2)} (Note: ${data.notes.bodyNote || '-'} \n`;
+  text += `Balance: ${data.scores.balance.toFixed(2)} (Note: ${data.notes.balanceNote || '-'} \n`;
+  
+  text += `Uniformity: ${(10 - data.cupChecks.uniformity.filter(v=>v===1).length*2).toFixed(2)} (Failed Cups: ${data.cupChecks.uniformity.filter(v=>v===1).map( (v,i) => `Cup ${i+1}`).join(', ') || 'None'})\n`;
+  text += `Clean Cup: ${(10 - data.cupChecks.cleanCup.filter(v=>v===1).length*2).toFixed(2)} (Failed Cups: ${data.cupChecks.cleanCup.filter(v=>v===1).map( (v,i) => `Cup ${i+1}`).join(', ') || 'None'})\n`;
+  text += `Sweetness: ${(10 - data.cupChecks.sweetness.filter(v=>v===1).length*2).toFixed(2)} (Failed Cups: ${data.cupChecks.sweetness.filter(v=>v===1).map( (v,i) => `Cup ${i+1}`).join(', ') || 'None'})\n`;
+  
+  text += `Overall: ${data.scores.overall.toFixed(2)} (Note: ${data.notes.overallNote || '-'} \n`;
+  
+  text += `\n-- Defect Summary --\n`;
+  text += `Defect Deduction Total: ${defectDeduction} points. \n`;
+  Object.keys(data.defectScores).forEach(key => {
+    text += `  Defect Cup ${key}: ${data.defectScores[key]} points deduction.\n`;
+  });
+
+  return text;
+}
+
+function getSummaryData() {
+  const data = getFormData();
+  let totalScore = 0;
+  let defectDeduction = 0;
+  
+  const scoreKeys = ['fragrance', 'flavor', 'aftertaste', 'acidity', 'body', 'balance', 'overall'];
+  scoreKeys.forEach(key => {
+    totalScore += data.scores[key];
+  });
+  
+  const cupCheckKeys = ['uniformity', 'cleanCup', 'sweetness'];
+  cupCheckKeys.forEach(key => {
+    totalScore += 10 - data.cupChecks[key].filter(v => v === 1).length * 2;
+  });
+  
+  Object.values(data.defectScores).forEach(val => {
+    defectDeduction += val;
+  });
+  
+  const finalScore = totalScore - defectDeduction;
+  const grade = finalScore >= 80 ? 'Specialty' : 'Not Specialty';
+  return { finalScore, grade };
+}
+
+document.getElementById('btnExportCSV').onclick = () => {
+  const data = getFormData();
+  const { finalScore, grade } = getSummaryData();
+  const defectCount = data.cupChecks.cleanCup.filter(v => v === 1).length;
+  const defectDeduction = Object.values(data.defectScores).reduce((a,b)=>a+b,0);
+  
+  const headers = ['Sample','Roast','Notes','Defect Notes','Defect Count','Defect Deduction','AcidityLevel','Fragrance/Aroma Score','Fragrance Note','Aroma Note','Flavor Score','Flavor Note','Aftertaste Score','Aftertaste Note','Acidity Score','Acidity Note','Body Score','Body Note','Balance Score','Balance Note','Uniformity Score','Uniformity Failed Cups','Clean Cup Score','Clean Cup Failed Cups','Sweetness Score','Sweetness Failed Cups','Overall Score','Overall Note','Final Score','Grade'];
+  
+  const getFailedCups = (key) => data.cupChecks[key].map((v,i) => v === 1 ? `แก้ว ${i+1}` : null).filter(Boolean).join(', ') || 'ทุกแก้วผ่าน';
+
+  const row = [
+    `"${data.sampleId}"`,
+    `"${data.roast}"`,
+    `"${data.generalNotes.replace(/"/g, '""')}"`,
+    `"${data.defectNotes.replace(/"/g, '""')}"`,
+    defectCount,
+    defectDeduction,
+    `"${data.acidityLevel}"`,
+    (data.scores.fragrance).toFixed(2),
+    `"${data.notes.fragranceNote.replace(/"/g, '""')}"`,
+    `"${data.notes.aromaNote.replace(/"/g, '""')}"`,
+    (data.scores.flavor).toFixed(2),
+    `"${data.notes.flavorNote.replace(/"/g, '""')}"`,
+    (data.scores.aftertaste).toFixed(2),
+    `"${data.notes.aftertasteNote.replace(/"/g, '""')}"`,
+    (data.scores.acidity).toFixed(2),
+    `"${data.notes.acidityNote.replace(/"/g, '""')}"`,
+    (data.scores.body).toFixed(2),
+    `"${data.notes.bodyNote.replace(/"/g, '""')}"`,
+    (data.scores.balance).toFixed(2),
+    `"${data.notes.balanceNote.replace(/"/g, '""')}"`,
+    (10 - data.cupChecks.uniformity.filter(v=>v===1).length*2).toFixed(2),
+    `"${getFailedCups('uniformity')}"`,
+    (10 - data.cupChecks.cleanCup.filter(v=>v===1).length*2).toFixed(2),
+    `"${getFailedCups('cleanCup')}"`,
+    (10 - data.cupChecks.sweetness.filter(v=>v===1).length*2).toFixed(2),
+    `"${getFailedCups('sweetness')}"`,
+    (data.scores.overall).toFixed(2),
+    `"${data.notes.overallNote.replace(/"/g, '""')}"`,
+    finalScore.toFixed(2),
+    `"${grade}"`
+  ];
+  
+  const csv = '\ufeff' + headers.join(',') + "\n" + row.join(',');
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cupping_${data.sampleId || 'sample'}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+document.getElementById('btnExportTXT').onclick = () => {
+  const text = getFullSummaryText();
+  const blob = new Blob([text],{type:'text/plain;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cupping_${getFormData().sampleId || 'sample'}.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
+function captureSummaryAndSave(type) {
+    const originalButtonText = document.getElementById(`btnExport${type.toUpperCase()}`).textContent;
+    document.getElementById(`btnExport${type.toUpperCase()}`).textContent = 'กำลังสร้างไฟล์...';
+
+    const summaryCard = document.getElementById('summaryCard');
+    html2canvas(summaryCard, { 
+        scale: 3, 
+        useCORS: true, 
+        logging: false,
+        scrollY: -window.scrollY,
+        width: summaryCard.offsetWidth, // Add explicit width
+        height: summaryCard.offsetHeight, // Add explicit height
+        foreignObjectRendering: false // Explicitly set this to false for better compatibility
+    }).then(canvas => {
+        if(type === 'png'){
+            const link = document.createElement('a');
+            link.download = `cupping_${getFormData().sampleId || 'sample'}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        if(type === 'pdf'){
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4'); 
+            const imgData = canvas.toDataURL('image/png');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            const a4Height = 297;
+            let currentHeight = 0;
+            
+            if (pdfHeight > a4Height) {
+                while (currentHeight < imgProps.height) {
+                    const sliceHeight = Math.min(a4Height / (pdfWidth / imgProps.width), imgProps.height - currentHeight);
+                    const cropY = currentHeight;
+                    
+                    const tempCanvas = document.createElement('canvas');
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = sliceHeight * (pdfWidth / imgProps.width); 
+                    
+                    const ctx = tempCanvas.getContext('2d');
+                    ctx.drawImage(canvas, 
+                        0, cropY * (pdfWidth / imgProps.width), 
+                        canvas.width, tempCanvas.height, 
+                        0, 0, 
+                        tempCanvas.width, tempCanvas.height
+                    );
+
+                    const tempImgData = tempCanvas.toDataURL('image/png');
+                    if (currentHeight > 0) {
+                        pdf.addPage();
+                    }
+                    pdf.addImage(tempImgData, 'PNG', 0, 0, pdfWidth, pdfWidth * (tempCanvas.height / tempCanvas.width));
+                    currentHeight += sliceHeight;
+                }
+            } else {
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            }
+            
+            pdf.save(`cupping_${getFormData().sampleId || 'sample'}.pdf`);
+        }
+        document.getElementById(`btnExport${type.toUpperCase()}`).textContent = originalButtonText;
+
+    }).catch(error => {
+        console.error('Error creating file:', error);
+        document.getElementById(`btnExport${type.toUpperCase()}`).textContent = originalButtonText;
+        alert("ขออภัยค่ะ ไม่สามารถสร้างไฟล์ได้ กรุณาลองใหม่อีกครั้ง");
+    });
+}
+
+document.getElementById('btnExportPNG').onclick = () => captureSummaryAndSave('png');
+document.getElementById('btnExportPDF').onclick = () => captureSummaryAndSave('pdf');
+
+function waitForFontLoad(fontName, callback) {
+  if (document.fonts && document.fonts.check(`12px "${fontName}"`)) {
+    callback();
+  } else {
+    setTimeout(() => waitForFontLoad(fontName, callback), 100);
+  }
+}
+
+// Function to convert Data URL to Blob
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type:mime});
+}
+
+// Separate Share function for clearer error handling
+document.getElementById('btnShare').onclick = () => {
+  const btn = document.getElementById('btnShare');
+  const originalText = btn.textContent;
+  btn.textContent = 'กำลังเตรียมข้อมูล...';
+  
+  waitForFontLoad('Segoe UI', () => {
+    const summaryCard = document.getElementById('summaryCard');
+    
+    html2canvas(summaryCard, {
+      scale: window.devicePixelRatio || 2,
+      useCORS: true,
+      logging: false,
+      width: summaryCard.offsetWidth,
+      height: summaryCard.offsetHeight,
+      foreignObjectRendering: false
+    }).then(canvas => {
+      // Use toDataURL and convert to Blob for better compatibility with iOS
+      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const blob = dataURLtoBlob(imgData);
+      
+      const file = new File([blob], `cupping_${getFormData().sampleId || 'sample'}.jpg`, { type: 'image/jpeg' });
+      const shareData = {
+        title: 'SCA Cupping Result',
+        text: `สรุปผลการประเมินกาแฟตัวอย่าง ${getFormData().sampleId || '-'} ได้คะแนนรวม ${getSummaryData().finalScore.toFixed(2)} (${getSummaryData().grade})`,
+        files: [file]
+      };
+      
+      if (navigator.share && navigator.canShare(shareData)) {
+        navigator.share(shareData)
+          .then(() => {
+            btn.textContent = originalText;
+            console.log('Shared successfully');
+          })
+          .catch(error => {
+            btn.textContent = originalText;
+            console.error('Error sharing:', error);
+            alert("ขออภัยค่ะ การแชร์ล้มเหลว กรุณาลองใหม่อีกครั้ง");
+          });
+      } else {
+        btn.textContent = originalText;
+        alert("ขออภัยค่ะ เบราว์เซอร์หรืออุปกรณ์ของคุณอาจไม่รองรับการแชร์ไฟล์");
+      }
+    }).catch(error => {
+      btn.textContent = originalText;
+      console.error('Error capturing for share:', error);
+      alert("ขออภัยค่ะ ไม่สามารถเตรียมไฟล์สำหรับการแชร์ได้");
+    });
+  });
+};
+</script>
+</body>
+</html>
